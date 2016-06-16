@@ -2,7 +2,10 @@
 
 var path = process.cwd();
 var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
-// var querystring = require('QueryString')
+
+var ShortHandler = require(path+'/app/controllers/shortHandler.server.js');
+
+
 module.exports = function (app, passport) {
 
 	function isLoggedIn (req, res, next) {
@@ -14,12 +17,17 @@ module.exports = function (app, passport) {
 	}
 
 	var clickHandler = new ClickHandler();
+	var shortHandler = new ShortHandler();
 
 	app.route('/')
 		.get(isLoggedIn, function (req, res) {
 			res.sendFile(path + '/public/index.html');
 		});
 
+	app.get('/new/*',shortHandler.createNew);
+	
+	app.get('/short/:short',shortHandler.redirect)
+	
 	app.route('/some').get(isLoggedIn,function(req,res){
 		res.json({yes:1});
 	});
