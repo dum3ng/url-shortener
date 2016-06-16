@@ -24,6 +24,9 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.route('/33',function(req,res){
+	res.send('you are here!')
+})
 
 routes(app, passport);
 
