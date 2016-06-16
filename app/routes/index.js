@@ -19,25 +19,7 @@ module.exports = function (app, passport) {
 		.get(isLoggedIn, function (req, res) {
 			res.sendFile(path + '/public/index.html');
 		});
-	app.get('/:date',function(req,res){
-		var d = parseInt(req.params.date,10)
-		if(d){
-			var time = new Date(d)
-			res.json({
-				unix:d,
-				natural:time.toDateString()
-			})
-		}else{
-			var str = req.params.date
-            str  = str.replace(/\%20/g,'')
-			var nat = new Date(str)
-			if(nat)
-				res.json({
-					unix:nat.getTime(),
-					natural:str,
-				})
-		}
-	});
+
 	app.route('/some').get(isLoggedIn,function(req,res){
 		res.json({yes:1});
 	});
@@ -59,12 +41,30 @@ module.exports = function (app, passport) {
 			// res.send('youare request profile')
 		});
 
+	app.get('/api/whoami',function (req, res) {
+		var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+		var header = req.headers['user-agent']
+		var json = {}
+		// for(var i = 0 ;i < req.headers.length;i++){
+		// 	var key = req.headers[i]
+		// 	json.key = key
+		// }
+		//  res.json(json)
+		var language = req.headers['accept-language'].split(',')[0]
+		var system = req.headers['user-agent'].match(/\((.*?)\)/)[1]
+		
+		res.json({ip,language,system})
+		});
 	app.route('/api/:id')
 		.get(isLoggedIn, function (req, res) {
 			res.json(req.user.github);
 	
 		});
 
+	
 	app.route('/auth/github')
 		.get(passport.authenticate('github'));
 
